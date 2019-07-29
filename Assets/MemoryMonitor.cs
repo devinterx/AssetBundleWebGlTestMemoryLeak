@@ -12,10 +12,6 @@ public class MemoryMonitor : MonoBehaviour
     [FormerlySerializedAs("MemoryOutput")]
     public Text memoryOutput;
 
-    private void Start() {
-        InvokeRepeating(nameof(Log), 0, 15);
-    }
-    
     private void Update()
     {
         if (memoryOutput == null) return;
@@ -27,6 +23,11 @@ public class MemoryMonitor : MonoBehaviour
         memoryOutput.text = $"Memory - Total: {total}MB, Used: {used}MB, Free: {free}MB";
     }
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+    private void Start() {
+        InvokeRepeating(nameof(Log), 0, 15);
+    }
+
     private static void Log()
     {
         var total = GetTotalMemorySize() / 1024 / 1024;
@@ -36,7 +37,6 @@ public class MemoryMonitor : MonoBehaviour
         Debug.Log($"Memory - Total: {total}MB, Used: {used}MB, Free: {free}MB");
     }
 
-#if UNITY_WEBGL && !UNITY_EDITOR
     private static uint GetFreeMemorySize() {
         return GetTotalMemorySize() - GetUsedMemorySize();
     }

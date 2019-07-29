@@ -23,6 +23,9 @@ public class Main : MonoBehaviour
     [FormerlySerializedAs("UnLoadBundle")]
     public Button unLoadBundle;
 
+    [FormerlySerializedAs("clearGC")]
+    public Button clearGc;
+
     private bool _isBundledSceneLoaded;
     private bool _isBundledSceneStartLoaded;
 
@@ -42,6 +45,7 @@ public class Main : MonoBehaviour
         if (unLoadScene != null) unLoadScene.onClick.AddListener(OnButtonUnLoadSceneClicked);
         if (loadBundle != null) loadBundle.onClick.AddListener(OnButtonLoadBundleClicked);
         if (unLoadBundle != null) unLoadBundle.onClick.AddListener(OnButtonUnLoadBundleClicked);
+        if (clearGc != null) clearGc.onClick.AddListener(OnButtonClearGcClicked);
     }
 
     private void Update()
@@ -102,11 +106,9 @@ public class Main : MonoBehaviour
 
         AssetBundle.UnloadAllAssetBundles(true);
         Resources.UnloadUnusedAssets();
-        
-        GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
-        
+
         _container = null;
     }
 
@@ -185,8 +187,18 @@ public class Main : MonoBehaviour
         var _object = _container.transform.Find("PurpleDrumSet(Clone)").gameObject;
         if (_object) Destroy(_object);
         AssetBundle.UnloadAllAssetBundles(true);
+        Resources.UnloadUnusedAssets();
 
         _isBundleStartLoaded = false;
         _isBundleLoaded = false;
+    }
+    
+    
+    private void OnButtonClearGcClicked()
+    {
+        AssetBundle.UnloadAllAssetBundles(true);
+        Resources.UnloadUnusedAssets();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
     }
 }
